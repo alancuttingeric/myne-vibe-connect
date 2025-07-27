@@ -59,9 +59,9 @@ export const AuthPage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md relative z-10"
+        className="w-full max-w-md relative z-50"
       >
-        <Card className="gradient-border glass backdrop-blur-xl">
+        <Card className="gradient-border glass backdrop-blur-xl relative z-50">
           <CardHeader className="text-center space-y-6">
             <motion.div
               className="flex justify-center"
