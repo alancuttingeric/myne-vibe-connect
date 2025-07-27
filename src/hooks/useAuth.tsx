@@ -76,56 +76,74 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signUp = async (email: string, password: string, name: string) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          name: name,
+    try {
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            name: name,
+          }
         }
-      }
-    });
+      });
 
-    if (error) {
+      if (error) {
+        toast({
+          title: "Sign Up Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+        return { error };
+      }
+
+      if (data.user) {
+        // Create user profile with better error handling
+        const { error: profileError } = await supabase
+          .from('users')
+          .insert({
+            id: data.user.id,
+            email: data.user.email!,
+            name: name,
+            role: 'artist',
+            status: 'pending'
+          });
+
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+          // Still show success since auth account was created
+        } else {
+          // Only log activity if profile creation succeeded
+          try {
+            await supabase
+              .from('activity_logs')
+              .insert({
+                user_id: data.user.id,
+                action: 'User registered'
+              });
+          } catch (activityError) {
+            console.error('Activity log error:', activityError);
+          }
+        }
+
+        toast({
+          title: "Registration Successful",
+          description: "Your account has been created. You can now sign in!",
+        });
+      }
+
+      return { error: null };
+    } catch (err) {
+      console.error('Unexpected sign up error:', err);
       toast({
         title: "Sign Up Failed",
-        description: error.message,
+        description: "An unexpected error occurred",
         variant: "destructive",
       });
-    } else if (data.user) {
-      // Create user profile
-      const { error: profileError } = await supabase
-        .from('users')
-        .insert({
-          id: data.user.id,
-          email: data.user.email!,
-          name: name,
-          role: 'artist',
-          status: 'pending'
-        });
-
-      if (profileError) {
-        console.error('Profile creation error:', profileError);
-      }
-
-      // Log activity
-      await supabase
-        .from('activity_logs')
-        .insert({
-          user_id: data.user.id,
-          action: 'User registered'
-        });
-
-      toast({
-        title: "Registration Successful",
-        description: "Your account has been created. You'll be able to access the dashboard once approved by the admin.",
-      });
+      return { error: { message: 'An unexpected error occurred' } };
     }
-
-    return { error };
   };
 
   const signOut = async () => {
