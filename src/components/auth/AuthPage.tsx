@@ -32,9 +32,9 @@ export const AuthPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
       {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute top-20 left-20 w-40 h-40 rounded-full"
+          className="absolute top-20 left-20 w-40 h-40 rounded-full pointer-events-none"
           style={{ background: 'linear-gradient(135deg, hsl(292 84% 61% / 0.1), hsl(264 100% 64% / 0.1))' }}
           animate={{ 
             x: [0, 30, 0],
@@ -44,7 +44,7 @@ export const AuthPage = () => {
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute bottom-20 right-20 w-60 h-60 rounded-full"
+          className="absolute bottom-20 right-20 w-60 h-60 rounded-full pointer-events-none"
           style={{ background: 'linear-gradient(135deg, hsl(196 100% 50% / 0.1), hsl(142 76% 56% / 0.1))' }}
           animate={{ 
             x: [0, -40, 0],
